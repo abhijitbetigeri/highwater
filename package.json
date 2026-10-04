@@ -10,6 +10,7 @@
     "present": "tsx src/cli/present.ts",
     "voice": "bash scripts/voice-eleven.sh",
     "voice:say": "bash scripts/voice.sh",
+    "video": "bash scripts/render-video.sh",
     "probe": "tsx src/cli/probe.ts",
     "typecheck": "tsc --noEmit"
   },

@@ -8,6 +8,7 @@
  *   npm run present -- --manual  advance on Enter (safer for a live take)
  */
 
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { createInterface } from 'node:readline/promises'
 import { FLAT_HALF_LIFE_DAYS, halfLifeLabel } from '../memory/decay.ts'
 import { resolveAsof, resolveFlat, searchPath } from '../memory/retrieve.ts'
@@ -32,11 +33,33 @@ const sleep = (ms: number): Promise<void> =>
 /** ASOF_SPEED=10 runs the whole thing 10× faster, for checking the layout. */
 const SPEED = Number(process.env.ASOF_SPEED ?? 1) || 1
 
+/**
+ * --frames writes the accumulated screen state at each beat to frames/beat-N.txt
+ * and exits immediately. scripts/render-video.sh turns those into the video, so
+ * the recording needs no screen-capture permission and is identical every run.
+ */
+const FRAMES = process.argv.includes('--frames')
+const screen: string[] = []
+let frameNo = 0
+if (FRAMES) {
+  const real = console.log.bind(console)
+  console.log = (...args: unknown[]): void => {
+    screen.push(args.map(String).join(' '))
+    if (!FRAMES) real(...args)
+  }
+}
+
 const rl = MANUAL
   ? createInterface({ input: process.stdin, output: process.stdout })
   : null
 
 async function beat(seconds: number): Promise<void> {
+  if (FRAMES) {
+    frameNo += 1
+    mkdirSync('frames', { recursive: true })
+    writeFileSync(`frames/beat-${frameNo}.txt`, screen.join('\n'))
+    return
+  }
   if (rl) {
     await rl.question(`${D}    ⏎${X}`)
     return
@@ -86,7 +109,7 @@ const flatRec = draft(corpus, flat)
 const asof = resolveAsof(corpus)
 const asofRec = draft(corpus, asof)
 
-console.clear()
+if (!FRAMES) console.clear()
 
 // ── beat 1 · the problem · 22s ───────────────────────────────────────────────
 console.log(`\n${B}asof${X}${D} — where should this job run?${X}\n`)
