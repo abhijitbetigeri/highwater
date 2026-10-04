@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Highwater</title>
+<meta name="description" content="A compute broker that decides where to run your job — on facts that are still true as of now.">
+<style>
+  :root{
+    --bg:#07090b; --panel:#0d1117; --line:#1c232c;
+    --fg:#d6dde5; --dim:#7d8894; --faint:#4a545f;
+    --red:#ff6b6b; --green:#5bd99a; --amber:#f0c674; --accent:#5bd99a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font:15px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    padding:0 16px;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:64px 0 96px}
+  h1{font-size:40px;margin:0;letter-spacing:-.02em;font-weight:700}
+  .tag{color:var(--dim);margin:10px 0 0;font-size:16px;line-height:1.5}
+  h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+     color:var(--faint);margin:56px 0 16px;font-weight:600}
+  p{margin:0 0 14px}
+  .dim{color:var(--dim)}
+  .panel{background:var(--panel);border:1px solid var(--line);
+         border-radius:8px;padding:18px 20px;margin:14px 0;overflow-x:auto}
+  pre{margin:0;font-size:13px;line-height:1.6;white-space:pre}
+  .red{color:var(--red)} .green{color:var(--green)} .amber{color:var(--amber)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0}
+  th,td{text-align:left;padding:7px 12px 7px 0;border-bottom:1px solid var(--line)}
+  th{color:var(--faint);font-weight:600;font-size:11px;
+     letter-spacing:.1em;text-transform:uppercase}
+  code{background:#141b22;padding:1px 6px;border-radius:4px;font-size:13px}
+  a{color:var(--accent)}
+  ol{padding-left:20px;margin:0} li{margin-bottom:9px}
+  .foot{margin-top:72px;padding-top:22px;border-top:1px solid var(--line);
+        color:var(--faint);font-size:13px}
+  @media(max-width:600px){h1{font-size:30px}.wrap{padding:40px 0 64px}pre{font-size:11px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Highwater</h1>
+  <p class="tag">A compute broker that decides where to run your job —<br>
+  on facts that are still true <em>as of now</em>.</p>
+
+  <h2>The problem</h2>
+  <p>You have four providers, because none of them can give you all the capacity you
+  need. Every job starts with the same question, answered from four browser tabs and
+  a vague memory of what spot cost last month.</p>
+  <p class="dim">Placement tools answer the cheap version. They don't know what the
+  job needs, they can't tell a fresh fact from a stale one, and they have no memory
+  of you — your quota, your interruption history, your rule about overnight runs.</p>
+
+  <h2>Same 21 facts. Same instant. Nothing deleted.</h2>
+
+  <div class="panel"><pre><span class="dim">ONE WINDOW FOR EVERYTHING  — 30d, every kind of fact</span>
+  <span class="red">ceiling in use: 22GB</span>
+
+  <span class="red">→ runpod / A10 24GB   $3.09   11.1h   @ $0.28/hr</span>
+
+  <span class="red">runpod is degraded right now — jobs failing at container start</span>
+  <span class="red">22GB was measured on commit 7b2e044. This job needs 38GB.</span>
+  <span class="red">It dies at step 200.</span></pre></div>
+
+  <div class="panel"><pre><span class="dim">ASOF  — per-kind, pinned, overrides live, commit-scoped</span>
+  <span class="green">ceiling in use: 38GB</span>
+
+  <span class="green">→ lambda / L40S 48GB   $6.42   5.8h   @ $1.10/hr</span>
+    <span class="dim">alt        modal / H100 80GB   $8.73   2.2h</span>
+    <span class="dim">dominated  lambda / A100 80GB  $8.82   4.2h</span>
+
+  <span class="amber">Not saying, because I can't stand behind it:</span>
+    <span class="amber">· vram_ceiling: 22GB</span>  <span class="dim">commit 7b2e044 — void, not stale</span>
+    <span class="amber">· price: $1.29/hr</span>     <span class="dim">superseded; 3d old, 6h half-life</span>
+    <span class="amber">· price ×2, capacity</span>  <span class="dim">live outage on runpod</span>
+    <span class="amber">· capacity: 4 avail</span>   <span class="dim">pinned quota caps this account at 2</span>
+    <span class="amber">· price: $0.95 spot</span>   <span class="dim">pinned policy: no spot over 4h</span>
+
+    <span class="amber">? spot interruption data is 41d old, past its 14d half-life.
+      Tell me once and I'll pin it.</span></pre></div>
+
+  <h2>Why</h2>
+  <p>Every external observation is a <strong>dated fact with a half-life</strong>, not
+  prompt context. Scrape a pricing table into a prompt and the model cannot tell a
+  number from twenty minutes ago from one from last quarter. asof reads decayed state.</p>
+
+  <table>
+    <tr><th>kind</th><th>half-life</th><th>why</th></tr>
+    <tr><td>quota · credential · policy</td><td><strong>pinned</strong></td><td>wrong here is a hard failure</td></tr>
+    <tr><td>price</td><td>6h</td><td>a day-old price is a guess</td></tr>
+    <tr><td>capacity</td><td>12h</td><td>the most volatile signal there is</td></tr>
+    <tr><td>interruption_rate</td><td>14d</td><td>spot behaviour shifts weekly</td></tr>
+    <tr><td>vram_ceiling · step_time</td><td>commit-scoped</td><td>not stale — <em>void</em></td></tr>
+  </table>
+
+  <p><strong>Cross-kind overrides</strong> catch what no half-life can: a live outage
+  voids a provider's prices however fresh, and a pinned quota suppresses a capacity
+  reading that exceeds it. Neither fact is stale. They never compete for the same slot.</p>
+
+  <p><strong>And it reads state, not search.</strong> A relevance query over the same
+  corpus returns six prices and <em>no</em> memory ceiling — the fact that decides the
+  question shares no vocabulary with it. Decay can only re-rank what retrieval surfaced.</p>
+
+  <h2>Run it</h2>
+  <div class="panel"><pre>git clone https://github.com/abhijitbetigeri/highwater
+npm install && npm run demo</pre></div>
+  <p class="dim">No API key, no database, no model call, no network. The recommendation
+  is a pure function of resolved state, so none of the improvement comes from sampling.</p>
+
+  <h2>Stack</h2>
+  <table>
+    <tr><td><strong>Neon</strong></td><td>facts store, pgvector, decay in SQL at query time; branches as the what-if engine</td></tr>
+    <tr><td><strong>Fly.io</strong></td><td>the probe — a 60s run measuring real VRAM high-water</td></tr>
+    <tr><td><strong>Exa</strong></td><td>market sensor; results land as dated facts, never raw context</td></tr>
+    <tr><td><strong>Mastra</strong></td><td>runtime; observability as the proof surface</td></tr>
+    <tr><td><strong>Executor</strong></td><td>reads autonomous, writes gated; credentials out of model context</td></tr>
+    <tr><td><strong>AgentMail</strong></td><td>the broker's inbox — notify out, <code>migrate</code> back in</td></tr>
+    <tr><td><strong>assistant-ui</strong></td><td>chat surface and the half-life controls</td></tr>
+    <tr><td><strong>Kernel</strong></td><td>the consoles with no API: quota, billing, capacity</td></tr>
+  </table>
+
+  <h2>What this is not</h2>
+  <p class="dim">Not a scheduler — it decides placement and hands off. Not a cost
+  dashboard; the output is a decision. Not a multi-cloud abstraction — it doesn't make
+  providers look alike, it exploits the fact that they don't. And nothing to offer
+  anyone on committed capacity: if you've pre-paid, there's no spread to find.</p>
+
+  <div class="foot">
+    Figures in the demo are fixture data modeled on real provider shapes, not live scrapes.<br>
+    <a href="https://github.com/abhijitbetigeri/highwater">github.com/abhijitbetigeri/highwater</a>
+  </div>
+
+</div>
+</body>
+</html>

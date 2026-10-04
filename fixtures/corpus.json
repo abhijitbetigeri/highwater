@@ -1,0 +1,225 @@
+{
+  "now": "2026-10-04T14:00:00Z",
+  "job": {
+    "workload": "g1-locomotion-ppo",
+    "code_fingerprint": "a3f91c2",
+    "total_steps": 120000,
+    "query": "cheapest hourly rate to run g1-locomotion-ppo tonight, A100 or L40S, spot ok"
+  },
+  "skus": {
+    "a10-24gb":   { "vram_gb": 24, "rel_perf": 0.38, "label": "A10 24GB" },
+    "l40s-48gb":  { "vram_gb": 48, "rel_perf": 0.72, "label": "L40S 48GB" },
+    "a100-80gb":  { "vram_gb": 80, "rel_perf": 1.0,  "label": "A100 80GB" },
+    "h100-80gb":  { "vram_gb": 80, "rel_perf": 1.9,  "label": "H100 80GB" }
+  },
+  "facts": [
+    {
+      "id": "vram-current",
+      "kind": "vram_ceiling",
+      "workload": "g1-locomotion-ppo",
+      "code_fingerprint": "a3f91c2",
+      "value": { "gb": 38 },
+      "observed_at": "2026-08-20T14:00:00Z",
+      "source": "probe",
+      "text": "peak VRAM 38GB measured over 200 steps, batch 4096"
+    },
+    {
+      "id": "vram-otherbranch",
+      "kind": "vram_ceiling",
+      "workload": "g1-locomotion-ppo",
+      "code_fingerprint": "7b2e044",
+      "value": { "gb": 22 },
+      "observed_at": "2026-09-26T14:00:00Z",
+      "source": "probe",
+      "text": "peak VRAM 22GB measured over 200 steps, batch 1024"
+    },
+    {
+      "id": "step-time",
+      "kind": "step_time",
+      "workload": "g1-locomotion-ppo",
+      "code_fingerprint": "a3f91c2",
+      "sku": "a100-80gb",
+      "value": { "seconds": 0.126 },
+      "observed_at": "2026-09-22T14:00:00Z",
+      "source": "probe",
+      "text": "0.126 s/step on A100 80GB"
+    },
+    {
+      "id": "ckpt-size",
+      "kind": "checkpoint_size",
+      "workload": "g1-locomotion-ppo",
+      "code_fingerprint": "a3f91c2",
+      "value": { "gb": 4.2 },
+      "observed_at": "2026-09-22T14:00:00Z",
+      "source": "probe",
+      "text": "checkpoint 4.2GB, sets the cost of migrating a running job"
+    },
+    {
+      "id": "fingerprint",
+      "kind": "code_fingerprint",
+      "workload": "g1-locomotion-ppo",
+      "value": { "sha": "a3f91c2" },
+      "observed_at": "2026-10-02T14:00:00Z",
+      "source": "run",
+      "text": "current commit a3f91c2"
+    },
+
+    {
+      "id": "price-runpod-a10",
+      "kind": "price",
+      "provider": "runpod",
+      "sku": "a10-24gb",
+      "value": { "usd_per_hour": 0.28, "market": "on-demand" },
+      "observed_at": "2026-10-04T13:35:00Z",
+      "source": "exa",
+      "text": "cheapest hourly rate A10 24GB on-demand $0.28/hr"
+    },
+    {
+      "id": "price-runpod-a100-spot",
+      "kind": "price",
+      "provider": "runpod",
+      "sku": "a100-80gb",
+      "value": { "usd_per_hour": 0.89, "market": "spot" },
+      "observed_at": "2026-10-04T13:40:00Z",
+      "source": "exa",
+      "text": "A100 80GB spot $0.89/hr cheap hourly rate"
+    },
+    {
+      "id": "price-lambda-a100-stale",
+      "kind": "price",
+      "provider": "lambda",
+      "sku": "a100-80gb",
+      "value": { "usd_per_hour": 1.29, "market": "on-demand" },
+      "observed_at": "2026-10-01T14:00:00Z",
+      "source": "exa",
+      "text": "A100 80GB on-demand $1.29/hr hourly rate"
+    },
+    {
+      "id": "price-lambda-a100",
+      "kind": "price",
+      "provider": "lambda",
+      "sku": "a100-80gb",
+      "value": { "usd_per_hour": 2.1, "market": "on-demand" },
+      "observed_at": "2026-10-04T13:25:00Z",
+      "source": "exa",
+      "text": "A100 80GB on-demand $2.10/hr hourly rate"
+    },
+    {
+      "id": "price-lambda-l40s",
+      "kind": "price",
+      "provider": "lambda",
+      "sku": "l40s-48gb",
+      "value": { "usd_per_hour": 1.1, "market": "on-demand" },
+      "observed_at": "2026-10-04T13:20:00Z",
+      "source": "exa",
+      "text": "L40S 48GB on-demand $1.10/hr hourly rate"
+    },
+    {
+      "id": "price-modal-h100",
+      "kind": "price",
+      "provider": "modal",
+      "sku": "h100-80gb",
+      "value": { "usd_per_hour": 3.95, "market": "on-demand" },
+      "observed_at": "2026-10-04T13:10:00Z",
+      "source": "exa",
+      "text": "H100 80GB on-demand $3.95/hr hourly rate"
+    },
+    {
+      "id": "price-modal-a100-spot",
+      "kind": "price",
+      "provider": "modal",
+      "sku": "a100-80gb",
+      "value": { "usd_per_hour": 0.95, "market": "spot" },
+      "observed_at": "2026-10-04T13:45:00Z",
+      "source": "exa",
+      "text": "A100 80GB spot $0.95/hr cheap hourly rate"
+    },
+
+    {
+      "id": "cap-lambda-l40s",
+      "kind": "capacity",
+      "provider": "lambda",
+      "sku": "l40s-48gb",
+      "value": { "available": 4 },
+      "observed_at": "2026-10-04T12:30:00Z",
+      "source": "exa",
+      "text": "4 × L40S 48GB available now"
+    },
+    {
+      "id": "cap-runpod-a100",
+      "kind": "capacity",
+      "provider": "runpod",
+      "sku": "a100-80gb",
+      "value": { "available": 12 },
+      "observed_at": "2026-10-04T13:30:00Z",
+      "source": "exa",
+      "text": "12 × A100 80GB available now"
+    },
+    {
+      "id": "cap-modal-h100",
+      "kind": "capacity",
+      "provider": "modal",
+      "sku": "h100-80gb",
+      "value": { "available": 99 },
+      "observed_at": "2026-10-04T13:00:00Z",
+      "source": "exa",
+      "text": "H100 80GB on-demand, no queue"
+    },
+
+    {
+      "id": "outage-runpod",
+      "kind": "outage",
+      "provider": "runpod",
+      "value": { "severity": "degraded", "region": "US-OR" },
+      "observed_at": "2026-10-04T08:00:00Z",
+      "source": "kernel",
+      "text": "degraded: NVMe mount failures in US-OR, jobs failing at container start"
+    },
+
+    {
+      "id": "quota-lambda",
+      "kind": "quota",
+      "provider": "lambda",
+      "value": { "max_instances": 2 },
+      "observed_at": "2026-09-14T14:00:00Z",
+      "source": "owner",
+      "text": "this account can allocate at most 2 instances"
+    },
+    {
+      "id": "policy-nospot",
+      "kind": "policy",
+      "value": { "rule": "no_spot_over_hours", "hours": 4 },
+      "observed_at": "2026-08-20T14:00:00Z",
+      "source": "owner",
+      "text": "no spot instances for runs longer than 4 hours"
+    },
+
+    {
+      "id": "interrupt-runpod",
+      "kind": "interruption_rate",
+      "provider": "runpod",
+      "value": { "rate": 0.18 },
+      "observed_at": "2026-08-24T14:00:00Z",
+      "source": "run",
+      "text": "spot interruption rate 18% over 9 runs"
+    },
+    {
+      "id": "latency-lambda",
+      "kind": "provision_latency",
+      "provider": "lambda",
+      "value": { "median_seconds": 90 },
+      "observed_at": "2026-09-14T14:00:00Z",
+      "source": "run",
+      "text": "median 90s to hand over a box"
+    },
+    {
+      "id": "latency-modal",
+      "kind": "provision_latency",
+      "provider": "modal",
+      "value": { "median_seconds": 8 },
+      "observed_at": "2026-09-16T14:00:00Z",
+      "source": "run",
+      "text": "median 8s to hand over a box"
+    }
+  ]
+}

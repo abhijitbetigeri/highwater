@@ -1,0 +1,21 @@
+{
+  "name": "highwater",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A compute broker that decides where to run your job — on facts that are still true as of now.",
+  "scripts": {
+    "demo": "tsx src/cli/demo.ts",
+    "record": "tsx src/cli/demo.ts --record",
+    "present": "tsx src/cli/present.ts",
+    "voice": "bash scripts/voice-eleven.sh",
+    "voice:say": "bash scripts/voice.sh",
+    "probe": "tsx src/cli/probe.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
