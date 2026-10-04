@@ -2,6 +2,9 @@
 
 **A compute broker that decides where to run your job — on facts that are still true as of now.**
 
+**[▶ Watch the 3-minute demo](https://github.com/abhijitbetigeri/highwater/releases/tag/v0.1)**
+ · **[Landing page](https://abhijitbetigeri.github.io/highwater/)**
+
 ```bash
 npm install && npm run demo      # no API key, no database, no model call, no network
 ```
@@ -56,6 +59,31 @@ Nothing is deleted. Supersession is resolved at read time, in SQL — so a super
 | **AgentMail** | the broker's own inbox. Notifications out, `migrate` back in |
 | **assistant-ui** | chat surface and the half-life controls |
 | **Kernel** | the consoles with no API: quota, billing, capacity dashboards |
+
+## The demo video
+
+```bash
+npm run present      # paced reveal, six beats, 2:54
+npm run video        # rebuilds highwater-demo.mp4 from scratch
+```
+
+The video is generated from the program's own output rather than screen-captured:
+`present --frames` dumps the real terminal state at each beat,
+[`scripts/render_frames.py`](scripts/render_frames.py) rasterises it with the actual
+ANSI colours, and each frame is held for exactly the length of its narration beat.
+No recording permission, and identical every run.
+
+Narration text lives once in [`scripts/narration.sh`](scripts/narration.sh), shared by
+the ElevenLabs path (`npm run voice`) and the offline `say` fallback
+(`npm run voice:say`), so the track and the script cannot drift apart. Prose copy of
+record is [NARRATION.md](NARRATION.md).
+
+`npm run video` needs a venv with Pillow and imageio-ffmpeg:
+
+```bash
+python3 -m venv ~/.hwvenv && ~/.hwvenv/bin/pip install Pillow imageio-ffmpeg
+export HIGHWATER_VENV=~/.hwvenv
+```
 
 ## What this is not
 
